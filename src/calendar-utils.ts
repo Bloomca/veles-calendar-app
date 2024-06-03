@@ -1,8 +1,6 @@
 export function createCalendarData() {
   const nowDate = new Date();
 
-  const currentDay = nowDate.getDay();
-  const currentMonthDay = nowDate.getDate();
   const currentYear = nowDate.getFullYear();
   const currentMonth = nowDate.getMonth();
   const previousMonth = currentMonth === 0 ? 12 : currentMonth - 1;
@@ -11,7 +9,7 @@ export function createCalendarData() {
   const firstMonthDay = new Date(currentYear, currentMonth, 1);
   const firstMonthDayNumber = firstMonthDay.getDay();
 
-  let result = [];
+  let result: { day: number; month: number }[] = [];
 
   // if the month started on Monday, we don't need to pad first week
   if (firstMonthDayNumber === 1) {
@@ -57,7 +55,7 @@ export function createCalendarData() {
   // great, the month has 31 days
   if (lastDayNumber === 31) {
     result = result.concat([
-      currentDay(29, currentMonth),
+      createDay(29, currentMonth),
       createDay(30, currentMonth),
       createDay(31, currentMonth),
     ]);
@@ -127,6 +125,6 @@ export function createCalendarData() {
   return result;
 }
 
-function createDay(day, month) {
+function createDay(day: number, month: number) {
   return { day, month };
 }

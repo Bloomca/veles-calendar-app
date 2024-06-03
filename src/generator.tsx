@@ -17,7 +17,8 @@ function DataGenerator() {
         <input
           type="number"
           name="tasksNumber"
-          onInput={(e) => numberState.setValue(() => Number(e.target.value))}
+          // @ts-expect-error
+          onInput={(e) => numberState.setValue(e.target?.value)}
           value={numberState.useAttribute((value) => String(value))}
         />
         <button type="submit">Generate</button>

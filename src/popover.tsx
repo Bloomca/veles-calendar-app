@@ -1,10 +1,21 @@
 import { onMount, createRef } from "veles";
 
-function Popover({ children, onClose }) {
-  const popoverRef = createRef();
+function Popover({
+  children,
+  onClose,
+}: {
+  children: any;
+  onClose: () => void;
+}) {
+  const popoverRef = createRef<HTMLDivElement>(null);
   onMount(() => {
-    const handler = (e) => {
-      if (isOutsideClick(e.target, popoverRef.current)) {
+    const handler = (e: MouseEvent) => {
+      if (
+        isOutsideClick(
+          e.target as HTMLElement,
+          popoverRef.current as HTMLElement
+        )
+      ) {
         onClose();
       }
     };
@@ -35,18 +46,18 @@ function Popover({ children, onClose }) {
   );
 }
 
-function isOutsideClick(target, element) {
+function isOutsideClick(target?: HTMLElement | null, element?: HTMLElement) {
   if (!element || !target) {
     return false;
   }
 
-  let targetElement = target;
+  let targetElement: HTMLElement | null | undefined = target;
   while (targetElement !== document.body) {
     if (targetElement === element) {
       return false;
     }
 
-    targetElement = targetElement.parentElement;
+    targetElement = targetElement?.parentElement;
   }
 
   return true;
