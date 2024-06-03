@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "description": "A test project to stress-test Veles UI library",
   "main": "src/index.js",
-  "type": "commonjs",
   "scripts": {
     "test": "jest",
     "dev": "webpack serve",
     "build": "webpack"
   },
   "dependencies": {
-    "veles": "^0.0.2"
+    "veles": "^0.0.3",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@babel/core": "^7.24.6",

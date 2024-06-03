@@ -10,6 +10,7 @@ lerna-debug.log*
 node_modules
 dist/**.*
 !dist/index.html
+!dist/styles.css
 dist-ssr
 *.local
 

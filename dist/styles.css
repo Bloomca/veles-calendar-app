@@ -1,0 +1,93 @@
+.calendar-grid {
+    border-top: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+}
+
+.calendar-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+}
+
+.calendar-day {
+    flex: 1 1 calc(100%/7);
+    height: 205px;
+    border: 1px solid #ccc;
+    border-top: none;
+    border-left: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.calendar-date {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    font-size: 13px;
+}
+
+.calendar-tasks-list {
+    list-style: none;
+    padding: 19px 6px 6px 6px;
+    margin: 0;
+}
+
+.calendar-task {
+    background-color: #f2efed;
+    margin-bottom: 3px;
+    padding: 1px 5px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-items: center;
+    height: 18px;
+}
+
+.calendar-task:hover {
+    background-color: #918a85;
+}
+
+.calendar-task-title {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 14px;
+}
+
+.calendar-task-priority {
+    flex: 0 0 8px;
+    width: 8px;
+    height: 8px;
+    margin-right: 5px;
+    border: 2px solid #aaa;
+    border-radius: 100%;
+}
+
+.calendar-task-priority:hover {
+    background-color: #666;
+}
+
+.popover {
+    position: fixed;
+    width: 200px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    z-index: 1;
+}
+
+.popover-close-button {
+    position: absolute;
+    right: 6px;
+    top: 2px;
+    width: 18px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.popover-close-button:hover {
+    background-color: #ddd;
+    border-radius: 5px;
+}

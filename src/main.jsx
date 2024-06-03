@@ -1,19 +1,17 @@
 import { attachComponent } from "veles";
+import { DataGenerator } from "./generator";
+import { Calendar } from "./calendar";
+import { createStoreState } from "./store";
 
 function App() {
+  const initializedState = createStoreState((state) => state.initialized);
   return (
     <div>
-      <NestedComponent />
-      <br />
-      <NestedComponent />
-      <br />
-      <NestedComponent />
+      {initializedState.useValue((isInitialized) =>
+        isInitialized ? <Calendar /> : <DataGenerator />
+      )}
     </div>
   );
-}
-
-function NestedComponent() {
-  return <span>hello, world</span>;
 }
 
 const element = document.getElementById("app");
