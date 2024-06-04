@@ -4,7 +4,7 @@ function Popover({
   children,
   onClose,
 }: {
-  children: any;
+  children?: any;
   onClose: () => void;
 }) {
   const popoverRef = createRef<HTMLDivElement>(null);

@@ -1,7 +1,10 @@
-import { createState } from "veles";
+import { createState, onUnmount } from "veles";
 import { createCalendarData } from "./calendar-utils";
 import { createStoreState } from "./store";
 import { Popover } from "./popover";
+
+import type { Task } from "./types";
+import type { State } from "veles";
 
 function Calendar() {
   return (
@@ -33,7 +36,7 @@ function CalendarGrid() {
   );
 }
 
-function CalendarRow({ dates }) {
+function CalendarRow({ dates }: { dates: { day: number; month: number }[] }) {
   return (
     <div class="calendar-row">
       {dates.map((data) => (
@@ -45,15 +48,22 @@ function CalendarRow({ dates }) {
 
 const MAX_AMOUNT_TASKS_PER_DAY = 8;
 
-function CalendarDay({ data, isActive }) {
-  const dayState = createStoreState((state) =>
-    state.tasks.filter((task) => {
-      return (
+function CalendarDay({
+  data,
+  isActive,
+}: {
+  data: { day: number; month: number };
+  isActive: boolean;
+}) {
+  const dayState = createStoreState((state) => {
+    const selectedProjectId = state.activeProject;
+    return Object.values(state.tasks).filter(
+      (task) =>
+        task.projectId === selectedProjectId &&
         task.dueDate.getDate() === data.day &&
         task.dueDate.getMonth() === data.month
-      );
-    })
-  );
+    );
+  });
   return (
     <div class="calendar-day">
       <div class="calendar-date">{String(data.day)}</div>
@@ -82,7 +92,7 @@ function CalendarDay({ data, isActive }) {
   );
 }
 
-function CalendarTask({ taskState }) {
+function CalendarTask({ taskState }: { taskState: State<Task> }) {
   return (
     <li class="calendar-task">
       <div
@@ -100,28 +110,30 @@ function CalendarTask({ taskState }) {
   );
 }
 
-function CalendarDayMoreTasks({ dayTasksState }) {
+function CalendarDayMoreTasks({
+  dayTasksState,
+}: {
+  dayTasksState: State<Task[]>;
+}) {
   const showState = createState(false);
   return (
     <li
       class="calendar-task"
-      onClick={() => showState.setValue(() => true)}
+      onClick={() => showState.setValue(true)}
       role="button"
     >
-      <div class="calendar-task-title">
-        {dayTasksState.useValueSelector(
-          (allDayTasks) => allDayTasks.length - MAX_AMOUNT_TASKS_PER_DAY + 1,
-          (moreTasksNumber) => `${moreTasksNumber} more tasks`
-        )}
+      <div
+        class="calendar-task-title"
+        data-value={dayTasksState.useAttribute((value) => value.length)}
+      >
+        {dayTasksState.useValue((tasks) => `total tasks: ${tasks.length}`)}
       </div>
       {showState.useValue((shouldShow) =>
         shouldShow ? (
-          <Popover onClose={() => showState.setValue(() => false)}>
+          <Popover onClose={() => showState.setValue(false)}>
             <ul class="calendar-tasks-list">
-              {dayTasksState.useValueIterator(
-                {
-                  key: "id",
-                },
+              {dayTasksState.useValueIterator<Task>(
+                { key: "id" },
                 ({ elementState }) => (
                   <CalendarTask taskState={elementState} />
                 )

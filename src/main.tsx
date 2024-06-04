@@ -1,6 +1,6 @@
 import { attachComponent } from "veles";
 import { DataGenerator } from "./generator";
-import { Calendar } from "./calendar";
+import { AppLayout } from "./app-layout";
 import { createStoreState } from "./store";
 
 function App() {
@@ -8,7 +8,7 @@ function App() {
   return (
     <div>
       {initializedState.useValue((isInitialized) =>
-        isInitialized ? <Calendar /> : <DataGenerator />
+        isInitialized ? <AppLayout /> : <DataGenerator />
       )}
     </div>
   );
