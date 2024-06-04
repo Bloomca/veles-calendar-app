@@ -1,8 +1,6 @@
-export function createCalendarData() {
-  const nowDate = new Date();
-
-  const currentYear = nowDate.getFullYear();
-  const currentMonth = nowDate.getMonth();
+function createCalendarData({ month, year }: { month: number; year: number }) {
+  const currentYear = year;
+  const currentMonth = month;
   const previousMonth = currentMonth === 0 ? 12 : currentMonth - 1;
   const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
 
@@ -128,3 +126,23 @@ export function createCalendarData() {
 function createDay(day: number, month: number) {
   return { day, month };
 }
+
+const monthNames = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+function renderMonth(month: number): string {
+  return monthNames[month];
+}
+
+export { createCalendarData, renderMonth };

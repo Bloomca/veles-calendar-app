@@ -65,6 +65,11 @@ html, body {
     font-size: 13px;
 }
 
+.calendar-date.non-current {
+    color: #202020;
+    opacity: 0.5;
+}
+
 .calendar-tasks-list {
     list-style: none;
     padding: 19px 6px 6px 6px;
@@ -106,6 +111,18 @@ html, body {
 
 .calendar-task-priority:hover {
     background-color: #666;
+}
+
+.calendar-controls {
+    margin: 15px;
+    margin-left: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+}
+
+.calendar-controls-date {
+    flex: 1 0 100px;
 }
 
 .popover {

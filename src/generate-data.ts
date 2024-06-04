@@ -10,7 +10,7 @@ import type { Task, Project, Section } from "./types";
 
 const allTasks = householdTasks.concat(schoolTasks).concat(homeProjectTasks);
 
-export function generateData({
+function generateData({
   tasksNumber,
   monthsNumber,
   projectsNumber,
@@ -177,3 +177,27 @@ function pickRandomElement<T>(arr: T[]): T {
   const newIndex = Math.floor(Math.random() * arr.length);
   return arr[newIndex];
 }
+
+function addOneTask() {
+  const storeValue = store.getState();
+  const nowDate = new Date();
+  let month = nowDate.getMonth();
+  let year = nowDate.getFullYear();
+
+  const projectId = storeValue.activeProject
+    ? storeValue.activeProject
+    : pickRandomElement(
+        Object.values(storeValue.projects).map((project) => project.id)
+      );
+  if (storeValue.activeProject) {
+  }
+  const newTask = createTask({
+    projectId: projectId,
+    sectionId: null,
+    month,
+    year,
+  });
+  storeValue.addTask(newTask);
+}
+
+export { generateData, addOneTask };
