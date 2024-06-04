@@ -1,20 +1,51 @@
 import { createStore } from "zustand/vanilla";
 import { createState } from "veles";
 
-import { Task } from "./types";
+import { Task, Project, Section } from "./types";
 
 type StoreState = {
   initialized: boolean;
-  tasks: Task[];
+  activeProject: number;
+  tasks: { [id: number]: Task };
+  projects: { [id: number]: Project };
+  sections: { [id: number]: Section };
   addTask: (tasks: Task | Task[]) => void;
+  addData: (data: {
+    projects: { [id: number]: Project };
+    sections: { [id: number]: Section };
+    tasks: { [id: number]: Task };
+  }) => void;
+  setActiveProject: (newActiveProject: number) => void;
 };
 
 export const store = createStore<StoreState>((set) => ({
   initialized: false,
-  tasks: [],
+  activeProject: 0,
+  tasks: {},
+  projects: {},
+  sections: {},
   addTask: (tasks) => {
-    set((state) => ({ tasks: state.tasks.concat(tasks) }));
+    set((state) => {
+      const newTasksState = (Array.isArray(tasks) ? tasks : [tasks]).reduce<
+        StoreState["tasks"]
+      >((acc, task) => {
+        acc[task.id] = task;
+        return acc;
+      }, {});
+
+      return { tasks: { ...state.tasks, ...newTasksState } };
+    });
   },
+  addData: (data) => {
+    set((state) => ({
+      tasks: { ...state.tasks, ...data.tasks },
+      sections: { ...state.sections, ...data.sections },
+      projects: { ...state.projects, ...data.projects },
+      activeProject: Number(Object.keys(data.projects)[0]),
+    }));
+  },
+  setActiveProject: (newProjectId) =>
+    set(() => ({ activeProject: newProjectId })),
 }));
 
 // @ts-expect-error
@@ -31,7 +62,7 @@ export function createStoreState<T>(selector: (state: StoreState) => T) {
 
       if (newValue !== prevValue) {
         prevValue = newValue;
-        setStoreValue(() => newValue);
+        setStoreValue(newValue);
       }
     });
 
