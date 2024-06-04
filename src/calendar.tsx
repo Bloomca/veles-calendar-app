@@ -1,5 +1,6 @@
 import { createState } from "veles";
 import { createCalendarData, renderMonth } from "./calendar-utils";
+import { InlineGenerator } from "./inline-generator";
 import { createStoreState } from "./store";
 import { Popover } from "./popover";
 import { selectState } from "./utils";
@@ -17,6 +18,10 @@ function Calendar() {
   });
   return (
     <div>
+      <InlineGenerator
+        getMonth={() => calendarState.getValue().month}
+        getYear={() => calendarState.getValue().year}
+      />
       <CalendarControls calendarState={calendarState} />
       <CalendarGrid calendarState={calendarState} />
     </div>

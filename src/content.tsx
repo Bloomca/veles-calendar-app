@@ -1,12 +1,10 @@
 import { Calendar } from "./calendar";
-import { InlineGenerator } from "./inline-generator";
 import { createStoreState } from "./store";
 
 function Content() {
   return (
     <div>
       <ProjectHeader />
-      <InlineGenerator />
       <Calendar />
     </div>
   );

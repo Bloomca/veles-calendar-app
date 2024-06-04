@@ -178,11 +178,11 @@ function pickRandomElement<T>(arr: T[]): T {
   return arr[newIndex];
 }
 
-function addOneTask() {
+function addOneTask({ month, year }: { month?: number; year?: number } = {}) {
   const storeValue = store.getState();
   const nowDate = new Date();
-  let month = nowDate.getMonth();
-  let year = nowDate.getFullYear();
+  let taskMonth = month || nowDate.getMonth();
+  let taskYear = year || nowDate.getFullYear();
 
   const projectId = storeValue.activeProject
     ? storeValue.activeProject
@@ -194,8 +194,8 @@ function addOneTask() {
   const newTask = createTask({
     projectId: projectId,
     sectionId: null,
-    month,
-    year,
+    month: taskMonth,
+    year: taskYear,
   });
   storeValue.addTask(newTask);
 }

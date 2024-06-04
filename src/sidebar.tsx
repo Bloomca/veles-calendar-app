@@ -36,6 +36,8 @@ function SidebarProject({
   activeState: State<number>;
 }) {
   const combinedState = combineState(projectState, activeState);
+  const tasksState = createStoreState((state) => state.tasks);
+  const tasksCombinedState = combineState(projectState, tasksState);
 
   return (
     <li
@@ -49,6 +51,14 @@ function SidebarProject({
       )}
     >
       {projectState.useValueSelector((project) => project.name)}
+
+      <div class="sidebar-project-count">
+        {tasksCombinedState.useValueSelector(
+          ([project, tasks]) =>
+            Object.values(tasks).filter((task) => task.projectId === project.id)
+              .length
+        )}
+      </div>
     </li>
   );
 }
