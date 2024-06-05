@@ -17,3 +17,7 @@ export type Task = {
   projectId: number;
   sectionId: number | null;
 };
+
+export type ViewSettings = {
+  type: "calendar" | "list";
+};

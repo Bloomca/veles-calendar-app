@@ -186,3 +186,51 @@ html, body {
 .sidebar-project:hover {
     background-color: #eee;
 }
+
+/* GENERAL */
+
+.view-type-button {
+    opacity: 0.5;
+}
+
+.view-type-button:hover, .view-type-button.active {
+    opacity: 1;
+}
+
+.project-header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.settings-container {
+    margin-right: 50px;
+}
+
+/* TASK LIST */
+
+.task-list-task-container {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+}
+
+.task-complete {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    border-radius: 100%;
+    border: 1px solid #bbb;
+}
+
+.list-view-container {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 800px;
+    margin-top: 30px;
+}
