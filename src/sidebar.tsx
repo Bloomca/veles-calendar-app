@@ -1,4 +1,4 @@
-import { combineState } from "veles";
+import { combineState } from "veles/utils";
 import { createStoreState, store } from "./store";
 
 import type { Project } from "./types";

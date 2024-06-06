@@ -1,6 +1,5 @@
-import { combineState } from "veles";
+import { combineState, selectState } from "veles/utils";
 import { createStoreState } from "./store";
-import { selectState } from "./utils";
 
 import type { Section, Task } from "./types";
 import type { State } from "veles";
