@@ -1,5 +1,6 @@
 import { combineState, selectState } from "veles/utils";
-import { createStoreState } from "./store";
+import { createStoreState, store } from "./store";
+import { InlineGenerator } from "./inline-generator";
 
 import type { Section, Task } from "./types";
 import type { State } from "veles";
@@ -13,14 +14,20 @@ function ListView() {
   });
 
   return (
-    <div class="list-view-container">
-      <NoSection />
-      {sectionsState.useValueIterator<Section>(
-        { key: "id" },
-        ({ elementState }) => (
-          <Section sectionState={elementState} />
-        )
-      )}
+    <div>
+      <InlineGenerator
+        getMonth={() => new Date().getMonth()}
+        getYear={() => new Date().getFullYear()}
+      />
+      <div class="list-view-container">
+        <NoSection />
+        {sectionsState.useValueIterator<Section>(
+          { key: "id" },
+          ({ elementState }) => (
+            <Section sectionState={elementState} />
+          )
+        )}
+      </div>
     </div>
   );
 }
@@ -30,7 +37,8 @@ function NoSection() {
     const activeProjectId = state.activeProject;
 
     return Object.values(state.tasks).filter(
-      (task) => task.projectId === activeProjectId && !task.sectionId
+      (task) =>
+        !task.completed && task.projectId === activeProjectId && !task.sectionId
     );
   });
 
@@ -45,11 +53,14 @@ function Section({ sectionState }: { sectionState: State<Section> }) {
   const tasksState = createStoreState((state) => state.tasks);
   const sectionTasksState = selectState(
     combineState(tasksState, sectionState),
-    ([tasks, section]) =>
-      Object.values(tasks).filter(
+    ([tasks, section]) => {
+      return Object.values(tasks).filter(
         (task) =>
-          task.sectionId === section.id && task.projectId === section.projectId
-      )
+          !task.completed &&
+          task.sectionId === section.id &&
+          task.projectId === section.projectId
+      );
+    }
   );
 
   return (
@@ -77,7 +88,10 @@ function Task({ taskState }: { taskState: State<Task> }) {
         class={taskState.useAttribute(
           (task) => `task-complete task-priority-${task.priority}`
         )}
-      ></div>
+        onClick={() => {
+          store.getState().completeTask(taskState.getValue().id);
+        }}
+      />
       {taskState.useValueSelector((task) => task.title)}
     </div>
   );

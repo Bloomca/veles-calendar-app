@@ -113,6 +113,19 @@ html, body {
     background-color: #666;
 }
 
+.task-complete {
+    width: 8px;
+    height: 8px;
+    margin-right: 5px;
+    border: 2px solid #aaa;
+    border-radius: 100%;
+    cursor: pointer;
+}
+
+.task-complete:hover {
+    background-color: #666;
+}
+
 .calendar-controls {
     margin: 15px;
     margin-left: 0;

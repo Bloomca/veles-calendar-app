@@ -22,6 +22,7 @@ export function CalendarDay({
     const selectedProjectId = state.activeProject;
     return Object.values(state.tasks).filter(
       (task) =>
+        !task.completed &&
         task.projectId === selectedProjectId &&
         task.dueDate.getDate() === data.day &&
         task.dueDate.getMonth() === data.month

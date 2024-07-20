@@ -55,8 +55,9 @@ function SidebarProject({
       <div class="sidebar-project-count">
         {tasksCombinedState.useValueSelector(
           ([project, tasks]) =>
-            Object.values(tasks).filter((task) => task.projectId === project.id)
-              .length
+            Object.values(tasks).filter(
+              (task) => !task.completed && task.projectId === project.id
+            ).length
         )}
       </div>
     </li>

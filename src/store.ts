@@ -10,6 +10,7 @@ type StoreState = {
   projects: { [id: number]: Project };
   sections: { [id: number]: Section };
   addTask: (tasks: Task | Task[]) => void;
+  completeTask: (taskId: Task["id"]) => void;
   addData: (data: {
     projects: { [id: number]: Project };
     sections: { [id: number]: Section };
@@ -18,7 +19,7 @@ type StoreState = {
   setActiveProject: (newActiveProject: number) => void;
 };
 
-export const store = createStore<StoreState>((set) => ({
+export const store = createStore<StoreState>((set, get) => ({
   initialized: false,
   activeProject: 0,
   tasks: {},
@@ -35,6 +36,22 @@ export const store = createStore<StoreState>((set) => ({
 
       return { tasks: { ...state.tasks, ...newTasksState } };
     });
+  },
+  completeTask: (taskId) => {
+    const task = get().tasks[taskId];
+    if (task) {
+      set((state) => {
+        return {
+          tasks: {
+            ...state.tasks,
+            [task.id]: {
+              ...task,
+              completed: true,
+            },
+          },
+        };
+      });
+    }
   },
   addData: (data) => {
     set((state) => ({
