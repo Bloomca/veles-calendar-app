@@ -1,6 +1,6 @@
 import { createState } from "veles";
 
-import { Calendar } from "./calendar";
+import { Calendar } from "./calendar/calendar";
 import { ListView } from "./list-view";
 import { createStoreState } from "./store";
 

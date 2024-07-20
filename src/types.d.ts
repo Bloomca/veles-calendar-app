@@ -16,6 +16,7 @@ export type Task = {
   priority: 1 | 2 | 3 | 4;
   projectId: number;
   sectionId: number | null;
+  completed: boolean;
 };
 
 export type ViewSettings = {

@@ -1,6 +1,6 @@
 import { createState } from "veles";
 import { generateData } from "./generate-data";
-import { store } from "./store";
+import { store } from "../store";
 
 function DataGenerator() {
   const tasksPerMonthState = createState("200");

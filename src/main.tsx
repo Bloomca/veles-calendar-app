@@ -1,5 +1,5 @@
 import { attachComponent } from "veles";
-import { DataGenerator } from "./generator";
+import { DataGenerator } from "./data/generator";
 import { AppLayout } from "./app-layout";
 import { createStoreState } from "./store";
 

@@ -1,4 +1,4 @@
-import { addOneTask } from "./generate-data";
+import { addOneTask } from "./data/generate-data";
 
 export function InlineGenerator({
   getMonth,

@@ -1,12 +1,13 @@
-import { store } from "./store";
+import { store } from "../store";
 import {
   householdTasks,
   schoolTasks,
   homeProjectTasks,
   projectAndSections,
-} from "./data";
+} from "../data";
+import { pickRandomElement } from "./utils";
 
-import type { Task, Project, Section } from "./types";
+import type { Task, Project, Section } from "../types";
 
 const allTasks = householdTasks.concat(schoolTasks).concat(homeProjectTasks);
 
@@ -170,12 +171,8 @@ function createTask({
     priority: pickRandomElement([1, 2, 3, 4]),
     sectionId,
     projectId,
+    completed: false,
   };
-}
-
-function pickRandomElement<T>(arr: T[]): T {
-  const newIndex = Math.floor(Math.random() * arr.length);
-  return arr[newIndex];
 }
 
 function addOneTask({ month, year }: { month?: number; year?: number } = {}) {
