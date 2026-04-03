@@ -11,11 +11,9 @@ const MAX_AMOUNT_TASKS_PER_DAY = 8;
 
 export function CalendarDay({
   data,
-  isActive,
   currentMonth,
 }: {
   data: { day: number; month: number };
-  isActive: boolean;
   currentMonth: number;
 }) {
   const dayState = createStoreState((state) => {
@@ -39,7 +37,7 @@ export function CalendarDay({
         {data.day === 1 ? ` ${renderMonth(data.month)}` : ""}
       </div>
       <ul class="calendar-tasks-list">
-        {dayState.useValueIterator(
+        {dayState.renderEach(
           {
             key: "id",
             selector: (allTasks) =>
@@ -47,11 +45,9 @@ export function CalendarDay({
                 ? allTasks.slice(0, MAX_AMOUNT_TASKS_PER_DAY - 1)
                 : allTasks,
           },
-          ({ elementState }) => (
-            <CalendarTask taskState={elementState} />
-          )
+          ({ elementState }) => <CalendarTask taskState={elementState} />
         )}
-        {dayState.useValueSelector(
+        {dayState.renderSelected(
           (tasks) => tasks.length > MAX_AMOUNT_TASKS_PER_DAY,
           (hasMoreTasks) =>
             hasMoreTasks ? (
@@ -71,24 +67,17 @@ export function CalendarDayMoreTasks({
 }) {
   const showState = createState(false);
   return (
-    <li
-      class="calendar-task"
-      onClick={() => showState.setValue(true)}
-      role="button"
-    >
+    <li class="calendar-task" onClick={() => showState.set(true)} role="button">
       <div class="calendar-task-title">
-        {dayTasksState.useValue((tasks) => `total tasks: ${tasks.length}`)}
+        {dayTasksState.render((tasks) => `total tasks: ${tasks.length}`)}
       </div>
-      {showState.useValue((shouldShow) =>
+      {showState.render((shouldShow) =>
         shouldShow ? (
-          <Popover onClose={() => showState.setValue(false)}>
+          <Popover onClose={() => showState.set(false)}>
             <ul class="calendar-tasks-list">
-              {dayTasksState.useValueIterator<Task>(
-                { key: "id" },
-                ({ elementState }) => (
-                  <CalendarTask taskState={elementState} />
-                )
-              )}
+              {dayTasksState.renderEach<Task>({ key: "id" }, ({ elementState }) => (
+                <CalendarTask taskState={elementState} />
+              ))}
             </ul>
           </Popover>
         ) : null

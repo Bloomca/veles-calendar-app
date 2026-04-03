@@ -19,10 +19,10 @@ function DataGenerator() {
         onSubmit={(e) => {
           e.preventDefault();
           const data = {
-            tasksNumber: Number(tasksPerMonthState.getValue()),
-            monthsNumber: Number(monthsState.getValue()),
-            projectsNumber: Number(projectsState.getValue()),
-            sectionsNumber: Number(sectionsState.getValue()),
+            tasksNumber: Number(tasksPerMonthState.get()),
+            monthsNumber: Number(monthsState.get()),
+            projectsNumber: Number(projectsState.get()),
+            sectionsNumber: Number(sectionsState.get()),
           };
           generateData(data);
           store.setState({ initialized: true });
@@ -34,9 +34,8 @@ function DataGenerator() {
           <input
             type="number"
             name="tasksNumber"
-            // @ts-expect-error
-            onInput={(e) => tasksPerMonthState.setValue(e.target?.value)}
-            value={tasksPerMonthState.useAttribute()}
+            onInput={(e) => tasksPerMonthState.set(e.target?.value)}
+            value={tasksPerMonthState.attribute()}
           />
         </label>
         <label>
@@ -44,9 +43,8 @@ function DataGenerator() {
           <input
             type="number"
             name="monthsNumber"
-            // @ts-expect-error
-            onInput={(e) => monthsState.setValue(e.target?.value)}
-            value={monthsState.useAttribute()}
+            onInput={(e) => monthsState.set(e.target?.value)}
+            value={monthsState.attribute()}
           />
         </label>
         <label>
@@ -54,9 +52,8 @@ function DataGenerator() {
           <input
             type="number"
             name="projectsNumber"
-            // @ts-expect-error
-            onInput={(e) => projectsState.setValue(e.target?.value)}
-            value={projectsState.useAttribute()}
+            onInput={(e) => projectsState.set(e.target?.value)}
+            value={projectsState.attribute()}
           />
         </label>
         <label>
@@ -64,9 +61,8 @@ function DataGenerator() {
           <input
             type="number"
             name="sectionsNumber"
-            // @ts-expect-error
-            onInput={(e) => sectionsState.setValue(e.target?.value)}
-            value={sectionsState.useAttribute()}
+            onInput={(e) => sectionsState.set(e.target?.value)}
+            value={sectionsState.attribute()}
           />
         </label>
 

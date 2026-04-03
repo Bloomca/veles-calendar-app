@@ -1,7 +1,6 @@
 import { createState } from "veles";
 import { createCalendarData } from "./calendar-utils";
 import { InlineGenerator } from "../inline-generator";
-import { selectState } from "../utils";
 import { CalendarControls } from "./controls";
 import { CalendarDay } from "./day";
 
@@ -18,8 +17,8 @@ function Calendar() {
   return (
     <div>
       <InlineGenerator
-        getMonth={() => calendarState.getValue().month}
-        getYear={() => calendarState.getValue().year}
+        getMonth={() => calendarState.get().month}
+        getYear={() => calendarState.get().year}
       />
       <CalendarControls calendarState={calendarState} />
       <CalendarGrid calendarState={calendarState} />
@@ -32,13 +31,13 @@ function CalendarGrid({
 }: {
   calendarState: State<CalendarState>;
 }) {
-  const monthlyCalendarState = selectState(calendarState, (calendarData) =>
+  const monthlyCalendarState = calendarState.map((calendarData) =>
     createCalendarData(calendarData)
   );
 
   return (
     <div class="calendar-grid">
-      {monthlyCalendarState.useValue((result) => {
+      {monthlyCalendarState.render((result) => {
         const firstWeek = result.slice(0, 7);
         const secondWeek = result.slice(7, 14);
         const thirdWeek = result.slice(14, 21);
@@ -46,7 +45,7 @@ function CalendarGrid({
         const fifthWeek = result.slice(28, 35);
         const sixthWeek = result.slice(35, 42);
         // don't do this
-        const currentMonth = calendarState.getValue().month;
+        const currentMonth = calendarState.get().month;
         return (
           <div>
             <CalendarRow dates={firstWeek} currentMonth={currentMonth} />
@@ -76,7 +75,7 @@ function CalendarRow({
   return (
     <div class="calendar-row">
       {dates.map((data) => (
-        <CalendarDay data={data} isActive={false} currentMonth={currentMonth} />
+        <CalendarDay data={data} currentMonth={currentMonth} />
       ))}
     </div>
   );

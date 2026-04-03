@@ -1,4 +1,3 @@
-import { combineState } from "veles/utils";
 import { createStoreState, store } from "./store";
 
 import type { Project } from "./types";
@@ -14,7 +13,7 @@ function Sidebar() {
     <div class="sidebar">
       List of projects:
       <ul>
-        {projectsState.useValueIterator<Project>(
+        {projectsState.renderEach<Project>(
           { key: "id" },
           ({ elementState }) => (
             <SidebarProject
@@ -35,25 +34,25 @@ function SidebarProject({
   projectState: State<Project>;
   activeState: State<number>;
 }) {
-  const combinedState = combineState(projectState, activeState);
+  const combinedState = projectState.combine(activeState);
   const tasksState = createStoreState((state) => state.tasks);
-  const tasksCombinedState = combineState(projectState, tasksState);
+  const tasksCombinedState = projectState.combine(tasksState);
 
   return (
     <li
       onClick={() => {
-        store.getState().setActiveProject(projectState.getValue().id);
+        store.getState().setActiveProject(projectState.get().id);
       }}
-      class={combinedState.useAttribute(([project, activeProjectId]) =>
+      class={combinedState.attribute(([project, activeProjectId]) =>
         project.id === activeProjectId
           ? "sidebar-project active"
           : "sidebar-project"
       )}
     >
-      {projectState.useValueSelector((project) => project.name)}
+      {projectState.renderSelected((project) => project.name)}
 
       <div class="sidebar-project-count">
-        {tasksCombinedState.useValueSelector(
+        {tasksCombinedState.renderSelected(
           ([project, tasks]) =>
             Object.values(tasks).filter(
               (task) => !task.completed && task.projectId === project.id

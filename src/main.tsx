@@ -7,7 +7,7 @@ function App() {
   const initializedState = createStoreState((state) => state.initialized);
   return (
     <div>
-      {initializedState.useValue((isInitialized) =>
+      {initializedState.render((isInitialized) =>
         isInitialized ? <AppLayout /> : <DataGenerator />
       )}
     </div>

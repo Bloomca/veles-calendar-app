@@ -7,15 +7,15 @@ export function CalendarTask({ taskState }: { taskState: State<Task> }) {
   return (
     <li class="calendar-task">
       <div
-        class={taskState.useAttribute(
+        class={taskState.attribute(
           (task) => `calendar-task-priority priority-${task.priority}`
         )}
         onClick={() => {
-          store.getState().completeTask(taskState.getValue().id);
+          store.getState().completeTask(taskState.get().id);
         }}
       ></div>
       <div class="calendar-task-title">
-        {taskState.useValueSelector(
+        {taskState.renderSelected(
           (task) => task.title,
           (title) => title
         )}

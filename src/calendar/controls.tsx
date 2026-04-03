@@ -12,17 +12,17 @@ function CalendarControls({
     <div class="calendar-controls">
       <div class="calendar-controls-date">
         <strong>
-          {calendarState.useValueSelector(
+          {calendarState.renderSelected(
             (state) => state.month,
             (monthNumber) => renderMonth(monthNumber)
           )}
         </strong>{" "}
-        {calendarState.useValueSelector((state) => state.year)}
+        {calendarState.renderSelected((state) => state.year)}
       </div>
       <div>
         <button
           onClick={() => {
-            calendarState.setValue((currentValue) => {
+            calendarState.update((currentValue) => {
               const newMonth =
                 currentValue.month === 0 ? 11 : currentValue.month - 1;
               const newYear =
@@ -37,7 +37,7 @@ function CalendarControls({
         <button
           onClick={() => {
             const currentDate = new Date();
-            calendarState.setValue({
+            calendarState.set({
               month: currentDate.getMonth(),
               year: currentDate.getFullYear(),
             });
@@ -47,7 +47,7 @@ function CalendarControls({
         </button>
         <button
           onClick={() => {
-            calendarState.setValue((currentValue) => {
+            calendarState.update((currentValue) => {
               const newMonth =
                 currentValue.month === 11 ? 0 : currentValue.month + 1;
               const newYear =

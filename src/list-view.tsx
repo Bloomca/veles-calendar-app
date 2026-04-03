@@ -1,4 +1,3 @@
-import { combineState, selectState } from "veles/utils";
 import { createStoreState, store } from "./store";
 import { InlineGenerator } from "./inline-generator";
 
@@ -21,12 +20,9 @@ function ListView() {
       />
       <div class="list-view-container">
         <NoSection />
-        {sectionsState.useValueIterator<Section>(
-          { key: "id" },
-          ({ elementState }) => (
-            <Section sectionState={elementState} />
-          )
-        )}
+        {sectionsState.renderEach<Section>({ key: "id" }, ({ elementState }) => (
+          <Section sectionState={elementState} />
+        ))}
       </div>
     </div>
   );
@@ -51,21 +47,20 @@ function NoSection() {
 
 function Section({ sectionState }: { sectionState: State<Section> }) {
   const tasksState = createStoreState((state) => state.tasks);
-  const sectionTasksState = selectState(
-    combineState(tasksState, sectionState),
-    ([tasks, section]) => {
+  const sectionTasksState = tasksState
+    .combine(sectionState)
+    .map(([tasks, section]) => {
       return Object.values(tasks).filter(
         (task) =>
           !task.completed &&
           task.sectionId === section.id &&
           task.projectId === section.projectId
       );
-    }
-  );
+    });
 
   return (
     <div>
-      <h2>{sectionState.useValueSelector((section) => section.name)}</h2>
+      <h2>{sectionState.renderSelected((section) => section.name)}</h2>
       <TaskList tasksState={sectionTasksState} />
     </div>
   );
@@ -74,7 +69,7 @@ function Section({ sectionState }: { sectionState: State<Section> }) {
 function TaskList({ tasksState }: { tasksState: State<Task[]> }) {
   return (
     <div>
-      {tasksState.useValueIterator<Task>({ key: "id" }, ({ elementState }) => (
+      {tasksState.renderEach<Task>({ key: "id" }, ({ elementState }) => (
         <Task taskState={elementState} />
       ))}
     </div>
@@ -85,14 +80,14 @@ function Task({ taskState }: { taskState: State<Task> }) {
   return (
     <div class="task-list-task-container">
       <div
-        class={taskState.useAttribute(
+        class={taskState.attribute(
           (task) => `task-complete task-priority-${task.priority}`
         )}
         onClick={() => {
-          store.getState().completeTask(taskState.getValue().id);
+          store.getState().completeTask(taskState.get().id);
         }}
       />
-      {taskState.useValueSelector((task) => task.title)}
+      {taskState.renderSelected((task) => task.title)}
     </div>
   );
 }

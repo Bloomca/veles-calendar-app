@@ -14,7 +14,7 @@ function Content() {
   return (
     <div>
       <ProjectHeader viewSettings={viewSettings} />
-      {viewSettings.useValueSelector(
+      {viewSettings.renderSelected(
         (settings) => settings.type,
         (type) => (type === "calendar" ? <Calendar /> : <ListView />)
       )}
@@ -41,7 +41,7 @@ function ProjectHeader({
 
   return (
     <div class="project-header-container">
-      <h1>{activeProjectState.useValue()}</h1>
+      <h1>{activeProjectState.render()}</h1>
       <Settings viewSettings={viewSettings} />
     </div>
   );
@@ -52,13 +52,13 @@ function Settings({ viewSettings }: { viewSettings: State<ViewSettings> }) {
     <div class="settings-container">
       <div>
         <button
-          class={viewSettings.useAttribute((settings) =>
+          class={viewSettings.attribute((settings) =>
             settings.type === "list"
               ? "view-type-button active"
               : "view-type-button"
           )}
           onClick={() =>
-            viewSettings.setValue((currentValue) => ({
+            viewSettings.update((currentValue) => ({
               ...currentValue,
               type: "list",
             }))
@@ -67,13 +67,13 @@ function Settings({ viewSettings }: { viewSettings: State<ViewSettings> }) {
           List view
         </button>
         <button
-          class={viewSettings.useAttribute((settings) =>
+          class={viewSettings.attribute((settings) =>
             settings.type === "calendar"
               ? "view-type-button active"
               : "view-type-button"
           )}
           onClick={() =>
-            viewSettings.setValue((currentValue) => ({
+            viewSettings.update((currentValue) => ({
               ...currentValue,
               type: "calendar",
             }))
