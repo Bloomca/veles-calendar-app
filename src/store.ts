@@ -1,7 +1,7 @@
 import { createStore } from "zustand/vanilla";
 import { createState } from "veles";
 
-import { Task, Project, Section } from "./types";
+import { Task, Project, Section, LabelEntity } from "./types";
 
 type StoreState = {
   initialized: boolean;
@@ -9,12 +9,14 @@ type StoreState = {
   tasks: { [id: number]: Task };
   projects: { [id: number]: Project };
   sections: { [id: number]: Section };
+  labels: { [id: number]: LabelEntity };
   addTask: (tasks: Task | Task[]) => void;
   completeTask: (taskId: Task["id"]) => void;
   addData: (data: {
     projects: { [id: number]: Project };
     sections: { [id: number]: Section };
     tasks: { [id: number]: Task };
+    labels: { [id: number]: LabelEntity };
   }) => void;
   setActiveProject: (newActiveProject: number) => void;
 };
@@ -25,6 +27,7 @@ export const store = createStore<StoreState>((set, get) => ({
   tasks: {},
   projects: {},
   sections: {},
+  labels: {},
   addTask: (tasks) => {
     set((state) => {
       const newTasksState = (Array.isArray(tasks) ? tasks : [tasks]).reduce<
@@ -58,6 +61,7 @@ export const store = createStore<StoreState>((set, get) => ({
       tasks: { ...state.tasks, ...data.tasks },
       sections: { ...state.sections, ...data.sections },
       projects: { ...state.projects, ...data.projects },
+      labels: { ...state.labels, ...data.labels },
       activeProject: Number(Object.keys(data.projects)[0]),
     }));
   },

@@ -3,34 +3,95 @@ import {
   householdTasks,
   schoolTasks,
   homeProjectTasks,
+  labelPrefixes,
+  labelSubjects,
   projectAndSections,
 } from "../data";
-import { pickRandomElement } from "./utils";
+import { pickRandomElement, pickRandomElements } from "./utils";
 
-import type { Task, Project, Section } from "../types";
+import type { Task, Project, Section, LabelEntity } from "../types";
 
 const allTasks = householdTasks.concat(schoolTasks).concat(homeProjectTasks);
+
+let generatedLabels: LabelEntity[] = [];
+let labelIdCounter = 1;
+
+function generateRandomLabels(labelsNumber: number): LabelEntity[] {
+  const normalizedLabelsNumber = Number.isFinite(labelsNumber)
+    ? Math.max(0, Math.floor(labelsNumber))
+    : 0;
+
+  const labels = new Set<string>();
+  let collisionCounter = 1;
+
+  while (labels.size < normalizedLabelsNumber) {
+    const label = `${pickRandomElement(labelPrefixes)} ${pickRandomElement(
+      labelSubjects
+    )}`;
+
+    if (!labels.has(label)) {
+      labels.add(label);
+      continue;
+    }
+
+    labels.add(`${label} ${collisionCounter}`);
+    collisionCounter = collisionCounter + 1;
+  }
+
+  return Array.from(labels).map((name) => ({
+    id: labelIdCounter++,
+    name,
+  }));
+}
+
+function pickTaskLabelsCount() {
+  const randomNumber = Math.random();
+
+  if (randomNumber < 0.45) {
+    return 0;
+  }
+
+  if (randomNumber < 0.8) {
+    return 1;
+  }
+
+  if (randomNumber < 0.93) {
+    return 2;
+  }
+
+  return 3;
+}
+
+function pickTaskLabelIds(labelsPool: LabelEntity[]): number[] {
+  const labelsNumber = Math.min(pickTaskLabelsCount(), labelsPool.length);
+  return pickRandomElements(labelsPool, labelsNumber).map((label) => label.id);
+}
 
 function generateData({
   tasksNumber,
   monthsNumber,
   projectsNumber,
   sectionsNumber,
+  labelsNumber,
 }: {
   tasksNumber: number;
   monthsNumber: number;
   projectsNumber: number;
   sectionsNumber: number;
+  labelsNumber: number;
 }) {
+  generatedLabels = generateRandomLabels(labelsNumber);
+
   let newProjects: Project[] = [];
   let newSections: Section[] = [];
   let newTasks: Task[] = [];
 
   for (let i = 0; i < projectsNumber; i++) {
-    let data = generateProjectData({
+    const data = generateProjectData({
       sectionsNumber,
       monthsNumber,
       tasksNumber,
+      labelsPool: generatedLabels,
     });
     newProjects.push(data.project);
     newSections = newSections.concat(data.sections);
@@ -41,6 +102,7 @@ function generateData({
     projects: byId(newProjects),
     sections: byId(newSections),
     tasks: byId(newTasks),
+    labels: byId(generatedLabels),
   });
 }
 
@@ -104,10 +166,12 @@ function generateProjectData({
   sectionsNumber,
   tasksNumber,
   monthsNumber,
+  labelsPool,
 }: {
   sectionsNumber: number;
   tasksNumber: number;
   monthsNumber: number;
+  labelsPool: LabelEntity[];
 }) {
   usedSectionNames = [];
   const newProject = createProject();
@@ -132,6 +196,7 @@ function generateProjectData({
           sectionId: pickRandomElement(allSections),
           month,
           year,
+          labelsPool,
         })
       );
     }
@@ -158,17 +223,20 @@ function createTask({
   sectionId,
   year,
   month,
+  labelsPool,
 }: {
   projectId: number;
   sectionId: number | null;
   year: number;
   month: number;
+  labelsPool: LabelEntity[];
 }): Task {
   return {
     id: idCounter++,
     title: pickRandomElement(allTasks),
     dueDate: new Date(year, month, pickRandomElement(allDays)),
     priority: pickRandomElement([1, 2, 3, 4]),
+    labelIds: pickTaskLabelIds(labelsPool),
     sectionId,
     projectId,
     completed: false,
@@ -178,21 +246,26 @@ function createTask({
 function addOneTask({ month, year }: { month?: number; year?: number } = {}) {
   const storeValue = store.getState();
   const nowDate = new Date();
-  let taskMonth = month || nowDate.getMonth();
-  let taskYear = year || nowDate.getFullYear();
+  const taskMonth = month ?? nowDate.getMonth();
+  const taskYear = year ?? nowDate.getFullYear();
 
   const projectId = storeValue.activeProject
     ? storeValue.activeProject
     : pickRandomElement(
         Object.values(storeValue.projects).map((project) => project.id)
       );
-  if (storeValue.activeProject) {
-  }
+
+  const labelsPool =
+    generatedLabels.length > 0
+      ? generatedLabels
+      : Object.values(storeValue.labels);
+
   const newTask = createTask({
-    projectId: projectId,
+    projectId,
     sectionId: null,
     month: taskMonth,
     year: taskYear,
+    labelsPool,
   });
   storeValue.addTask(newTask);
 }

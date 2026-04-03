@@ -9,11 +9,17 @@ export type Section = {
   projectId: number;
 };
 
+export type LabelEntity = {
+  id: number;
+  name: string;
+};
+
 export type Task = {
   id: number;
   title: string;
   dueDate: Date;
   priority: 1 | 2 | 3 | 4;
+  labelIds: number[];
   projectId: number;
   sectionId: number | null;
   completed: boolean;

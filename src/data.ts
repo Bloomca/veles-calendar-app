@@ -307,6 +307,52 @@ const homeProjectTasks = [
   "Laying down vinyl flooring",
 ];
 
+const labelPrefixes = [
+  "Urgent",
+  "Later",
+  "Blocked",
+  "Personal",
+  "Work",
+  "Family",
+  "Quick",
+  "Deep",
+  "Review",
+  "Plan",
+  "Backend",
+  "Frontend",
+  "Research",
+  "Meeting",
+  "Today",
+  "This week",
+  "Optional",
+  "High focus",
+  "Maintenance",
+  "Cleanup",
+];
+
+const labelSubjects = [
+  "Bugs",
+  "UX",
+  "Infrastructure",
+  "Design",
+  "Planning",
+  "Tests",
+  "Refactor",
+  "Docs",
+  "Content",
+  "Analytics",
+  "Customers",
+  "Data",
+  "Security",
+  "Performance",
+  "Billing",
+  "Release",
+  "Polish",
+  "Automation",
+  "Migration",
+  "Prototype",
+];
+
 const projectAndSections = {
   projects: [
     "Project Waffle Iron",
@@ -424,4 +470,11 @@ const projectAndSections = {
   ],
 };
 
-export { householdTasks, schoolTasks, homeProjectTasks, projectAndSections };
+export {
+  householdTasks,
+  schoolTasks,
+  homeProjectTasks,
+  labelPrefixes,
+  labelSubjects,
+  projectAndSections,
+};

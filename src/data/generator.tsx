@@ -7,6 +7,7 @@ function DataGenerator() {
   const monthsState = createState("3");
   const projectsState = createState("4");
   const sectionsState = createState("10");
+  const labelsState = createState("15");
   return (
     <div class="generator-container">
       <h1>Generate data</h1>
@@ -23,6 +24,7 @@ function DataGenerator() {
             monthsNumber: Number(monthsState.get()),
             projectsNumber: Number(projectsState.get()),
             sectionsNumber: Number(sectionsState.get()),
+            labelsNumber: Number(labelsState.get()),
           };
           generateData(data);
           store.setState({ initialized: true });
@@ -63,6 +65,15 @@ function DataGenerator() {
             name="sectionsNumber"
             onInput={(e) => sectionsState.set(e.target?.value)}
             value={sectionsState.attribute()}
+          />
+        </label>
+        <label>
+          <span>Number of labels:</span>
+          <input
+            type="number"
+            name="labelsNumber"
+            onInput={(e) => labelsState.set(e.target?.value)}
+            value={labelsState.attribute()}
           />
         </label>
 
