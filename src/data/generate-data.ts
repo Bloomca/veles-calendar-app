@@ -185,18 +185,25 @@ function generateProjectData({
     null,
     ...sections.map((section) => section.id),
   ];
+  const orderBySectionId: { [key: string]: number } = {};
   const nowDate = new Date();
   let month = nowDate.getMonth();
   let year = nowDate.getFullYear();
   for (let i = 0; i < monthsNumber; i++) {
     for (let j = 0; j < tasksNumber; j++) {
+      const sectionId = pickRandomElement(allSections);
+      const sectionOrderKey = String(sectionId);
+      const order = orderBySectionId[sectionOrderKey] || 0;
+      orderBySectionId[sectionOrderKey] = order + 1;
+
       tasks.push(
         createTask({
           projectId: newProject.id,
-          sectionId: pickRandomElement(allSections),
+          sectionId,
           month,
           year,
           labelsPool,
+          order,
         })
       );
     }
@@ -224,12 +231,14 @@ function createTask({
   year,
   month,
   labelsPool,
+  order,
 }: {
   projectId: number;
   sectionId: number | null;
   year: number;
   month: number;
   labelsPool: LabelEntity[];
+  order: number;
 }): Task {
   return {
     id: idCounter++,
@@ -237,6 +246,7 @@ function createTask({
     dueDate: new Date(year, month, pickRandomElement(allDays)),
     priority: pickRandomElement([1, 2, 3, 4]),
     labelIds: pickTaskLabelIds(labelsPool),
+    order,
     sectionId,
     projectId,
     completed: false,
@@ -260,12 +270,17 @@ function addOneTask({ month, year }: { month?: number; year?: number } = {}) {
       ? generatedLabels
       : Object.values(storeValue.labels);
 
+  const order = Object.values(storeValue.tasks)
+    .filter((task) => task.projectId === projectId && task.sectionId === null)
+    .reduce((maxOrder, task) => Math.max(maxOrder, task.order), -1) + 1;
+
   const newTask = createTask({
     projectId,
     sectionId: null,
     month: taskMonth,
     year: taskYear,
     labelsPool,
+    order,
   });
   storeValue.addTask(newTask);
 }

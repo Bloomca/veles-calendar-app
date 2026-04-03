@@ -20,6 +20,7 @@ export type Task = {
   dueDate: Date;
   priority: 1 | 2 | 3 | 4;
   labelIds: number[];
+  order: number;
   projectId: number;
   sectionId: number | null;
   completed: boolean;
