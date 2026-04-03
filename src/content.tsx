@@ -13,19 +13,21 @@ function Content() {
     type: "calendar",
   });
   return (
-    <div>
+    <div class="content-shell">
       <ProjectHeader viewSettings={viewSettings} />
-      {viewSettings.renderSelected((settings) => settings.type, (type) => {
-        if (type === "calendar") {
-          return <Calendar />;
-        }
+      <div class="content-view-container">
+        {viewSettings.renderSelected((settings) => settings.type, (type) => {
+          if (type === "calendar") {
+            return <Calendar />;
+          }
 
-        if (type === "board") {
-          return <BoardView />;
-        }
+          if (type === "board") {
+            return <BoardView />;
+          }
 
-        return <ListView />;
-      })}
+          return <ListView />;
+        })}
+      </div>
     </div>
   );
 }

@@ -175,6 +175,8 @@ html, body {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
+    width: 100%;
+    min-width: 0;
 }
 
 .sidebar-container {
@@ -182,7 +184,8 @@ html, body {
 }
 
 .content-container {
-    flex: 1 1 100%;
+    flex: 1 1 auto;
+    min-width: 0;
 }
 
 .sidebar {
@@ -210,6 +213,19 @@ html, body {
 
 /* GENERAL */
 
+.content-shell {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding: 0 16px;
+}
+
+.content-view-container {
+    width: 100%;
+    min-width: 0;
+}
+
 .view-type-button {
     opacity: 0.5;
 }
@@ -222,13 +238,14 @@ html, body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1000px;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .settings-container {
-    margin-right: 50px;
+    margin-right: 0;
+    display: flex;
+    justify-content: flex-end;
 }
 
 /* TASK LIST */
@@ -363,6 +380,7 @@ html, body {
 /* BOARD VIEW */
 
 .board-view-scroll-container {
+    width: 100%;
     overflow-x: auto;
     padding-bottom: 12px;
 }
