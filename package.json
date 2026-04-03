@@ -9,7 +9,7 @@
     "build": "NODE_ENV=production webpack"
   },
   "dependencies": {
-    "veles": "1.0.0-alpha.2",
+    "veles": "^1.0.0-alpha.3",
     "zustand": "4.5.2"
   },
   "devDependencies": {

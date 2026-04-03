@@ -416,7 +416,7 @@ function Task({
     >
       <div
         class="task-drag-handle"
-        draggable={"true" as any}
+        draggable={"true"}
         title="Drag task"
         onDragStart={(e) => {
           const task = taskState.get();

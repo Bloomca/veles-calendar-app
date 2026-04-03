@@ -21,7 +21,7 @@ export function CalendarTask({
   return (
     <li
       class={taskClassState.attribute()}
-      draggable={"true" as any}
+      draggable={true}
       onDragStart={(e) => {
         const task = taskState.get();
 
