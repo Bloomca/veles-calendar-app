@@ -1,6 +1,7 @@
 import { createState } from "veles";
 import { createStoreState, store } from "./store";
 import { InlineGenerator } from "./inline-generator";
+import { TaskInfo } from "./task-info";
 
 import type { LabelEntity, Section, Task } from "./types";
 import type { State } from "veles";
@@ -17,50 +18,6 @@ type DropTarget = {
   placement: DropPlacement;
   targetTaskId?: number;
 };
-
-const shortDateFormatter = new Intl.DateTimeFormat(undefined, {
-  weekday: "short",
-  month: "short",
-  day: "numeric",
-});
-
-const shortDateWithYearFormatter = new Intl.DateTimeFormat(undefined, {
-  weekday: "short",
-  month: "short",
-  day: "numeric",
-  year: "numeric",
-});
-
-function toStartOfDay(date: Date) {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-}
-
-function getDueDateVariant(dueDate: Date): "past" | "soon" | "future" {
-  const dueDateStart = toStartOfDay(dueDate);
-  const todayStart = toStartOfDay(new Date());
-  const tomorrowStart = new Date(todayStart);
-  tomorrowStart.setDate(tomorrowStart.getDate() + 1);
-
-  if (dueDateStart.getTime() < todayStart.getTime()) {
-    return "past";
-  }
-
-  if (
-    dueDateStart.getTime() === todayStart.getTime() ||
-    dueDateStart.getTime() === tomorrowStart.getTime()
-  ) {
-    return "soon";
-  }
-
-  return "future";
-}
-
-function formatDueDate(dueDate: Date) {
-  const currentYear = new Date().getFullYear();
-  return dueDate.getFullYear() === currentYear
-    ? shortDateFormatter.format(dueDate)
-    : shortDateWithYearFormatter.format(dueDate);
-}
 
 function sortTasksByOrder(tasks: Task[]) {
   return [...tasks].sort((task1, task2) => task1.order - task2.order || task1.id - task2.id);
@@ -464,33 +421,6 @@ function Task({
         </div>
         <TaskInfo taskState={taskState} taskLabelsState={taskLabelsState} />
       </div>
-    </div>
-  );
-}
-
-function TaskInfo({
-  taskState,
-  taskLabelsState,
-}: {
-  taskState: State<Task>;
-  taskLabelsState: State<LabelEntity[]>;
-}) {
-  return (
-    <div class="task-list-task-info">
-      {taskState.renderSelected((task) => task.dueDate, (dueDate) => (
-        <span class={`task-due-date task-due-date-${getDueDateVariant(dueDate)}`}>
-          {formatDueDate(dueDate)}
-        </span>
-      ))}
-      {taskLabelsState.render((labels) =>
-        labels.length > 0 ? (
-          <div class="task-list-labels">
-            {labels.map((label) => (
-              <span class="task-label">{label.name}</span>
-            ))}
-          </div>
-        ) : null
-      )}
     </div>
   );
 }

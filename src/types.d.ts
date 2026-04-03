@@ -27,5 +27,5 @@ export type Task = {
 };
 
 export type ViewSettings = {
-  type: "calendar" | "list";
+  type: "calendar" | "list" | "board";
 };

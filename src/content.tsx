@@ -2,6 +2,7 @@ import { createState } from "veles";
 
 import { Calendar } from "./calendar/calendar";
 import { ListView } from "./list-view";
+import { BoardView } from "./board-view";
 import { createStoreState } from "./store";
 
 import type { State } from "veles";
@@ -14,10 +15,17 @@ function Content() {
   return (
     <div>
       <ProjectHeader viewSettings={viewSettings} />
-      {viewSettings.renderSelected(
-        (settings) => settings.type,
-        (type) => (type === "calendar" ? <Calendar /> : <ListView />)
-      )}
+      {viewSettings.renderSelected((settings) => settings.type, (type) => {
+        if (type === "calendar") {
+          return <Calendar />;
+        }
+
+        if (type === "board") {
+          return <BoardView />;
+        }
+
+        return <ListView />;
+      })}
     </div>
   );
 }
@@ -65,6 +73,21 @@ function Settings({ viewSettings }: { viewSettings: State<ViewSettings> }) {
           }
         >
           List view
+        </button>
+        <button
+          class={viewSettings.attribute((settings) =>
+            settings.type === "board"
+              ? "view-type-button active"
+              : "view-type-button"
+          )}
+          onClick={() =>
+            viewSettings.update((currentValue) => ({
+              ...currentValue,
+              type: "board",
+            }))
+          }
+        >
+          Board
         </button>
         <button
           class={viewSettings.attribute((settings) =>
