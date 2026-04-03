@@ -53,7 +53,7 @@ function isOutsideClick(target?: HTMLElement | null, element?: HTMLElement) {
 
   let targetElement: HTMLElement | null | undefined = target;
   while (targetElement !== document.body) {
-    if (targetElement === element) {
+    if (targetElement === element || !targetElement) {
       return false;
     }
 
