@@ -254,6 +254,27 @@ html, body {
 
 .task-list-task-info {
     min-height: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.task-due-date {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.task-due-date-past {
+    color: #d1242f;
+}
+
+.task-due-date-soon {
+    color: #2da44e;
+}
+
+.task-due-date-future {
+    color: #8b949e;
 }
 
 .task-list-labels {
