@@ -1,7 +1,7 @@
 function createCalendarData({ month, year }: { month: number; year: number }) {
   const currentYear = year;
   const currentMonth = month;
-  const previousMonth = currentMonth === 0 ? 12 : currentMonth - 1;
+  const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
   const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
 
   const firstMonthDay = new Date(currentYear, currentMonth, 1);

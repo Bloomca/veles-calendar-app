@@ -17,6 +17,10 @@ type StoreState = {
     targetSectionId: Task["sectionId"];
     targetIndex: number;
   }) => void;
+  updateTaskDueDate: (options: {
+    taskId: Task["id"];
+    dueDate: Date;
+  }) => void;
   addData: (data: {
     projects: { [id: number]: Project };
     sections: { [id: number]: Section };
@@ -147,6 +151,23 @@ export const store = createStore<StoreState>((set, get) => ({
         tasks: updatedTasks,
       };
     });
+  },
+  updateTaskDueDate: ({ taskId, dueDate }) => {
+    const currentTask = get().tasks[taskId];
+
+    if (!currentTask) {
+      return;
+    }
+
+    set((state) => ({
+      tasks: {
+        ...state.tasks,
+        [taskId]: {
+          ...currentTask,
+          dueDate,
+        },
+      },
+    }));
   },
   addData: (data) => {
     set((state) => ({

@@ -14,6 +14,10 @@ function Calendar() {
     month: currentDate.getMonth(),
     year: currentDate.getFullYear(),
   });
+  const draggedTaskIdState = createState<number | null>(null);
+  const dragTargetDateState = createState<
+    { day: number; month: number; year: number } | null
+  >(null);
   return (
     <div>
       <InlineGenerator
@@ -21,15 +25,23 @@ function Calendar() {
         getYear={() => calendarState.get().year}
       />
       <CalendarControls calendarState={calendarState} />
-      <CalendarGrid calendarState={calendarState} />
+      <CalendarGrid
+        calendarState={calendarState}
+        draggedTaskIdState={draggedTaskIdState}
+        dragTargetDateState={dragTargetDateState}
+      />
     </div>
   );
 }
 
 function CalendarGrid({
   calendarState,
+  draggedTaskIdState,
+  dragTargetDateState,
 }: {
   calendarState: State<CalendarState>;
+  draggedTaskIdState: State<number | null>;
+  dragTargetDateState: State<{ day: number; month: number; year: number } | null>;
 }) {
   const monthlyCalendarState = calendarState.map((calendarData) =>
     createCalendarData(calendarData)
@@ -46,17 +58,54 @@ function CalendarGrid({
         const sixthWeek = result.slice(35, 42);
         // don't do this
         const currentMonth = calendarState.get().month;
+        const currentYear = calendarState.get().year;
         return (
           <div>
-            <CalendarRow dates={firstWeek} currentMonth={currentMonth} />
-            <CalendarRow dates={secondWeek} currentMonth={currentMonth} />
-            <CalendarRow dates={thirdWeek} currentMonth={currentMonth} />
-            <CalendarRow dates={fourthWeek} currentMonth={currentMonth} />
+            <CalendarRow
+              dates={firstWeek}
+              currentMonth={currentMonth}
+              currentYear={currentYear}
+              draggedTaskIdState={draggedTaskIdState}
+              dragTargetDateState={dragTargetDateState}
+            />
+            <CalendarRow
+              dates={secondWeek}
+              currentMonth={currentMonth}
+              currentYear={currentYear}
+              draggedTaskIdState={draggedTaskIdState}
+              dragTargetDateState={dragTargetDateState}
+            />
+            <CalendarRow
+              dates={thirdWeek}
+              currentMonth={currentMonth}
+              currentYear={currentYear}
+              draggedTaskIdState={draggedTaskIdState}
+              dragTargetDateState={dragTargetDateState}
+            />
+            <CalendarRow
+              dates={fourthWeek}
+              currentMonth={currentMonth}
+              currentYear={currentYear}
+              draggedTaskIdState={draggedTaskIdState}
+              dragTargetDateState={dragTargetDateState}
+            />
             {fifthWeek.length ? (
-              <CalendarRow dates={fifthWeek} currentMonth={currentMonth} />
+              <CalendarRow
+                dates={fifthWeek}
+                currentMonth={currentMonth}
+                currentYear={currentYear}
+                draggedTaskIdState={draggedTaskIdState}
+                dragTargetDateState={dragTargetDateState}
+              />
             ) : null}
             {sixthWeek.length ? (
-              <CalendarRow dates={sixthWeek} currentMonth={currentMonth} />
+              <CalendarRow
+                dates={sixthWeek}
+                currentMonth={currentMonth}
+                currentYear={currentYear}
+                draggedTaskIdState={draggedTaskIdState}
+                dragTargetDateState={dragTargetDateState}
+              />
             ) : null}
           </div>
         );
@@ -68,14 +117,26 @@ function CalendarGrid({
 function CalendarRow({
   dates,
   currentMonth,
+  currentYear,
+  draggedTaskIdState,
+  dragTargetDateState,
 }: {
   dates: { day: number; month: number }[];
   currentMonth: number;
+  currentYear: number;
+  draggedTaskIdState: State<number | null>;
+  dragTargetDateState: State<{ day: number; month: number; year: number } | null>;
 }) {
   return (
     <div class="calendar-row">
       {dates.map((data) => (
-        <CalendarDay data={data} currentMonth={currentMonth} />
+        <CalendarDay
+          data={data}
+          currentMonth={currentMonth}
+          currentYear={currentYear}
+          draggedTaskIdState={draggedTaskIdState}
+          dragTargetDateState={dragTargetDateState}
+        />
       ))}
     </div>
   );

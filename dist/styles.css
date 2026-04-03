@@ -58,6 +58,10 @@ html, body {
     overflow: hidden;
 }
 
+.calendar-day-drop-target {
+    background-color: rgba(151, 106, 74, 0.2);
+}
+
 .calendar-date {
     position: absolute;
     top: 4px;
@@ -91,6 +95,10 @@ html, body {
 
 .calendar-task:hover {
     background-color: #918a85;
+}
+
+.calendar-task-dragging {
+    opacity: 0.45;
 }
 
 .calendar-task-title {
