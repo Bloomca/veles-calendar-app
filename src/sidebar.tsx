@@ -11,7 +11,7 @@ function Sidebar() {
 
   return (
     <div class="sidebar">
-      List of projects:
+      <h3>Projects</h3>
       <ul>
         {projectsState.renderEach<Project>(
           { key: "id" },
