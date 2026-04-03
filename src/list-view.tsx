@@ -1,7 +1,7 @@
 import { createStoreState, store } from "./store";
 import { InlineGenerator } from "./inline-generator";
 
-import type { Section, Task } from "./types";
+import type { LabelEntity, Section, Task } from "./types";
 import type { State } from "veles";
 
 function ListView() {
@@ -67,16 +67,30 @@ function Section({ sectionState }: { sectionState: State<Section> }) {
 }
 
 function TaskList({ tasksState }: { tasksState: State<Task[]> }) {
+  const labelsState = createStoreState((state) => state.labels);
+
   return (
     <div>
       {tasksState.renderEach<Task>({ key: "id" }, ({ elementState }) => (
-        <Task taskState={elementState} />
+        <Task taskState={elementState} labelsState={labelsState} />
       ))}
     </div>
   );
 }
 
-function Task({ taskState }: { taskState: State<Task> }) {
+function Task({
+  taskState,
+  labelsState,
+}: {
+  taskState: State<Task>;
+  labelsState: State<{ [id: number]: LabelEntity }>;
+}) {
+  const taskLabelsState = taskState.combine(labelsState).map(([task, labels]) =>
+    task.labelIds
+      .map((labelId) => labels[labelId])
+      .filter((label): label is LabelEntity => Boolean(label))
+  );
+
   return (
     <div class="task-list-task-container">
       <div
@@ -87,7 +101,28 @@ function Task({ taskState }: { taskState: State<Task> }) {
           store.getState().completeTask(taskState.get().id);
         }}
       />
-      {taskState.renderSelected((task) => task.title)}
+      <div class="task-list-task-content">
+        <div class="task-list-task-title">
+          {taskState.renderSelected((task) => task.title)}
+        </div>
+        <TaskInfo taskLabelsState={taskLabelsState} />
+      </div>
+    </div>
+  );
+}
+
+function TaskInfo({ taskLabelsState }: { taskLabelsState: State<LabelEntity[]> }) {
+  return (
+    <div class="task-list-task-info">
+      {taskLabelsState.render((labels) =>
+        labels.length > 0 ? (
+          <div class="task-list-labels">
+            {labels.map((label) => (
+              <span class="task-label">{label.name}</span>
+            ))}
+          </div>
+        ) : null
+      )}
     </div>
   );
 }

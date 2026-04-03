@@ -230,7 +230,7 @@ html, body {
     padding-bottom: 12px;
     border-bottom: 1px solid #eee;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
 }
 
 .task-complete {
@@ -239,6 +239,34 @@ html, body {
     margin-right: 10px;
     border-radius: 100%;
     border: 1px solid #bbb;
+    margin-top: 2px;
+}
+
+.task-list-task-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.task-list-task-title {
+    line-height: 1.2;
+}
+
+.task-list-task-info {
+    min-height: 16px;
+}
+
+.task-list-labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.task-label {
+    color: #1f6feb;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-size: 12px;
 }
 
 .list-view-container {
