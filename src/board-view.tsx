@@ -1,3 +1,4 @@
+import { createState } from "veles";
 import { createStoreState, store } from "./store";
 import { InlineGenerator } from "./inline-generator";
 import { TaskInfo } from "./task-info";
@@ -5,9 +6,37 @@ import { TaskInfo } from "./task-info";
 import type { LabelEntity, Section, Task } from "./types";
 import type { State } from "veles";
 
+type SectionId = number | null;
+type DragPayload = {
+  taskId: number;
+  projectId: number;
+  sourceSectionId: SectionId;
+};
+type DropPlacement = "before" | "after" | "end" | "empty";
+type DropTarget = {
+  sectionId: SectionId;
+  placement: DropPlacement;
+  targetTaskId?: number;
+};
+
 function sortTasksByOrder(tasks: Task[]) {
   return [...tasks].sort(
     (task1, task2) => task1.order - task2.order || task1.id - task2.id
+  );
+}
+
+function isSameDropTarget(
+  target1: DropTarget | null,
+  target2: DropTarget | null
+) {
+  if (!target1 || !target2) {
+    return target1 === target2;
+  }
+
+  return (
+    target1.sectionId === target2.sectionId &&
+    target1.placement === target2.placement &&
+    target1.targetTaskId === target2.targetTaskId
   );
 }
 
@@ -18,6 +47,8 @@ function BoardView() {
       (section) => section.projectId === activeProjectId
     );
   });
+  const dragPayloadState = createState<DragPayload | null>(null);
+  const dropTargetState = createState<DropTarget | null>(null);
 
   return (
     <div>
@@ -27,9 +58,16 @@ function BoardView() {
       />
       <div class="board-view-scroll-container">
         <div class="board-view-container">
-          <NoSectionColumn />
+          <NoSectionColumn
+            dragPayloadState={dragPayloadState}
+            dropTargetState={dropTargetState}
+          />
           {sectionsState.renderEach<Section>({ key: "id" }, ({ elementState }) => (
-            <SectionColumn sectionState={elementState} />
+            <SectionColumn
+              sectionState={elementState}
+              dragPayloadState={dragPayloadState}
+              dropTargetState={dropTargetState}
+            />
           ))}
         </div>
       </div>
@@ -37,7 +75,13 @@ function BoardView() {
   );
 }
 
-function NoSectionColumn() {
+function NoSectionColumn({
+  dragPayloadState,
+  dropTargetState,
+}: {
+  dragPayloadState: State<DragPayload | null>;
+  dropTargetState: State<DropTarget | null>;
+}) {
   const tasksState = createStoreState((state) => {
     const activeProjectId = state.activeProject;
 
@@ -49,10 +93,28 @@ function NoSectionColumn() {
     );
   });
 
-  return <BoardColumn title="no section" tasksState={tasksState} />;
+  return (
+    <div class="board-column">
+      <h2 class="board-column-title">no section</h2>
+      <BoardTaskList
+        sectionId={null}
+        tasksState={tasksState}
+        dragPayloadState={dragPayloadState}
+        dropTargetState={dropTargetState}
+      />
+    </div>
+  );
 }
 
-function SectionColumn({ sectionState }: { sectionState: State<Section> }) {
+function SectionColumn({
+  sectionState,
+  dragPayloadState,
+  dropTargetState,
+}: {
+  sectionState: State<Section>;
+  dragPayloadState: State<DragPayload | null>;
+  dropTargetState: State<DropTarget | null>;
+}) {
   const tasksState = createStoreState((state) => state.tasks);
   const sectionTasksState = tasksState
     .combine(sectionState)
@@ -72,48 +134,178 @@ function SectionColumn({ sectionState }: { sectionState: State<Section> }) {
       <h2 class="board-column-title">
         {sectionState.renderSelected((section) => section.name)}
       </h2>
-      <BoardTaskList tasksState={sectionTasksState} />
-    </div>
-  );
-}
-
-function BoardColumn({
-  title,
-  tasksState,
-}: {
-  title: string;
-  tasksState: State<Task[]>;
-}) {
-  return (
-    <div class="board-column">
-      <h2 class="board-column-title">{title}</h2>
-      <BoardTaskList tasksState={tasksState} />
+      <BoardTaskList
+        sectionId={sectionState.get().id}
+        tasksState={sectionTasksState}
+        dragPayloadState={dragPayloadState}
+        dropTargetState={dropTargetState}
+      />
     </div>
   );
 }
 
 function BoardTaskList({
+  sectionId,
   tasksState,
+  dragPayloadState,
+  dropTargetState,
 }: {
+  sectionId: SectionId;
   tasksState: State<Task[]>;
+  dragPayloadState: State<DragPayload | null>;
+  dropTargetState: State<DropTarget | null>;
 }) {
   const labelsState = createStoreState((state) => state.labels);
+
+  const listDropZoneClassState = tasksState
+    .combine(dropTargetState)
+    .map(([tasks, dropTarget]) => {
+      if (!dropTarget || dropTarget.sectionId !== sectionId) {
+        return "";
+      }
+
+      if (dropTarget.placement === "empty" && tasks.length === 0) {
+        return "board-column-drop-zone-active-empty";
+      }
+
+      if (dropTarget.placement === "end" || dropTarget.placement === "empty") {
+        return "board-column-drop-zone-active-end";
+      }
+
+      return "";
+    });
+
+  const isListEmptyState = tasksState.map((tasks) => tasks.length === 0);
+
+  const setDropTarget = (newDropTarget: DropTarget | null) => {
+    const currentDropTarget = dropTargetState.get();
+
+    if (isSameDropTarget(currentDropTarget, newDropTarget)) {
+      return;
+    }
+
+    dropTargetState.set(newDropTarget);
+  };
+
+  const applyDrop = (dropTarget: DropTarget) => {
+    const dragPayload = dragPayloadState.get();
+
+    if (!dragPayload) {
+      return;
+    }
+
+    const tasks = tasksState.get();
+    let targetIndex = tasks.length;
+
+    if (dropTarget.placement === "before" || dropTarget.placement === "after") {
+      if (!dropTarget.targetTaskId || dropTarget.targetTaskId === dragPayload.taskId) {
+        dragPayloadState.set(null);
+        setDropTarget(null);
+        return;
+      }
+
+      const foundTaskIndex = tasks.findIndex(
+        (task) => task.id === dropTarget.targetTaskId
+      );
+
+      if (foundTaskIndex === -1) {
+        dragPayloadState.set(null);
+        setDropTarget(null);
+        return;
+      }
+
+      targetIndex =
+        dropTarget.placement === "before" ? foundTaskIndex : foundTaskIndex + 1;
+    }
+
+    store.getState().moveTask({
+      taskId: dragPayload.taskId,
+      targetSectionId: sectionId,
+      targetIndex,
+    });
+
+    dragPayloadState.set(null);
+    setDropTarget(null);
+  };
+
+  const setListDropTarget = () => {
+    const dragPayload = dragPayloadState.get();
+
+    if (!dragPayload) {
+      return;
+    }
+
+    const listTasks = tasksState.get();
+
+    setDropTarget({
+      sectionId,
+      placement: listTasks.length === 0 ? "empty" : "end",
+    });
+  };
 
   return (
     <div class="board-column-tasks">
       {tasksState.renderEach<Task>({ key: "id" }, ({ elementState }) => (
-        <BoardTaskCard taskState={elementState} labelsState={labelsState} />
+        <BoardTaskCard
+          sectionId={sectionId}
+          taskState={elementState}
+          labelsState={labelsState}
+          dragPayloadState={dragPayloadState}
+          dropTargetState={dropTargetState}
+          setDropTarget={setDropTarget}
+          applyDrop={applyDrop}
+        />
       ))}
+      <div
+        class={listDropZoneClassState.attribute(
+          (dropClass) => `board-column-drop-zone ${dropClass}`
+        )}
+        onDragOver={(e) => {
+          if (!dragPayloadState.get()) {
+            return;
+          }
+
+          e.preventDefault();
+          setListDropTarget();
+        }}
+        onDrop={(e) => {
+          if (!dragPayloadState.get()) {
+            return;
+          }
+
+          e.preventDefault();
+          applyDrop({
+            sectionId,
+            placement: tasksState.get().length === 0 ? "empty" : "end",
+          });
+        }}
+      >
+        {isListEmptyState.render((isEmpty) =>
+          isEmpty ? (
+            <span class="board-column-drop-zone-text">Drop tasks here</span>
+          ) : null
+        )}
+      </div>
     </div>
   );
 }
 
 function BoardTaskCard({
+  sectionId,
   taskState,
   labelsState,
+  dragPayloadState,
+  dropTargetState,
+  setDropTarget,
+  applyDrop,
 }: {
+  sectionId: SectionId;
   taskState: State<Task>;
   labelsState: State<{ [id: number]: LabelEntity }>;
+  dragPayloadState: State<DragPayload | null>;
+  dropTargetState: State<DropTarget | null>;
+  setDropTarget: (newDropTarget: DropTarget | null) => void;
+  applyDrop: (dropTarget: DropTarget) => void;
 }) {
   const taskLabelsState = taskState.combine(labelsState).map(([task, labels]) =>
     task.labelIds
@@ -121,13 +313,112 @@ function BoardTaskCard({
       .filter((label): label is LabelEntity => Boolean(label))
   );
 
+  const taskClassState = taskState
+    .combine(dropTargetState, dragPayloadState)
+    .map(([task, dropTarget, dragPayload]) => {
+      const classes: string[] = [];
+
+      if (dragPayload?.taskId === task.id) {
+        classes.push("board-task-is-dragging");
+      }
+
+      if (
+        dropTarget &&
+        dropTarget.sectionId === sectionId &&
+        dropTarget.targetTaskId === task.id
+      ) {
+        if (dropTarget.placement === "before") {
+          classes.push("board-task-drop-before");
+        } else if (dropTarget.placement === "after") {
+          classes.push("board-task-drop-after");
+        }
+      }
+
+      return classes.join(" ");
+    });
+
   return (
-    <div class="board-task-card">
+    <div
+      class={taskClassState.attribute((taskClass) => `board-task-card ${taskClass}`)}
+      draggable={true}
+      onDragStart={(e) => {
+        const task = taskState.get();
+
+        dragPayloadState.set({
+          taskId: task.id,
+          projectId: task.projectId,
+          sourceSectionId: sectionId,
+        });
+        setDropTarget(null);
+
+        if (e.dataTransfer) {
+          e.dataTransfer.effectAllowed = "move";
+          e.dataTransfer.setData("text/plain", String(task.id));
+          const cardElement = e.currentTarget as HTMLElement;
+          e.dataTransfer.setDragImage(
+            cardElement,
+            cardElement.clientWidth / 2,
+            cardElement.clientHeight / 2
+          );
+        }
+      }}
+      onDragEnd={() => {
+        dragPayloadState.set(null);
+        setDropTarget(null);
+      }}
+      onDragOver={(e) => {
+        if (!dragPayloadState.get()) {
+          return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const targetElement = e.currentTarget as HTMLElement;
+        const targetRect = targetElement.getBoundingClientRect();
+        const placement: DropPlacement =
+          e.clientY - targetRect.top < targetRect.height / 2 ? "before" : "after";
+
+        setDropTarget({
+          sectionId,
+          placement,
+          targetTaskId: taskState.get().id,
+        });
+      }}
+      onDrop={(e) => {
+        if (!dragPayloadState.get()) {
+          return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const targetElement = e.currentTarget as HTMLElement;
+        const targetRect = targetElement.getBoundingClientRect();
+        const placement: DropPlacement =
+          e.clientY - targetRect.top < targetRect.height / 2 ? "before" : "after";
+
+        applyDrop({
+          sectionId,
+          placement,
+          targetTaskId: taskState.get().id,
+        });
+      }}
+    >
       <div
         class={taskState.attribute(
           (task) => `task-complete task-priority-${task.priority}`
         )}
-        onClick={() => {
+        draggable={false}
+        onMouseDown={(e) => {
+          e.stopPropagation();
+        }}
+        onDragStart={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
           store.getState().completeTask(taskState.get().id);
         }}
       />

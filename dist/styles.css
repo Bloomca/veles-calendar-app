@@ -413,7 +413,6 @@ html, body {
 .board-column-tasks {
     display: flex;
     flex-direction: column;
-    gap: 10px;
 }
 
 .board-task-card {
@@ -423,6 +422,49 @@ html, body {
     padding: 10px;
     display: flex;
     align-items: flex-start;
+    margin-bottom: 10px;
+    cursor: grab;
+    user-select: none;
+}
+
+.board-task-card:active {
+    cursor: grabbing;
+}
+
+.board-task-is-dragging {
+    opacity: 0.45;
+    background-color: #f6f8fa;
+}
+
+.board-task-drop-before {
+    border-top: 4px solid #1f6feb;
+}
+
+.board-task-drop-after {
+    border-bottom: 4px solid #1f6feb;
+}
+
+.board-column-drop-zone {
+    min-height: 10px;
+    margin-top: 2px;
+}
+
+.board-column-drop-zone-active-end {
+    border-top: 4px solid #1f6feb;
+}
+
+.board-column-drop-zone-active-empty {
+    border: 4px solid #1f6feb;
+    border-radius: 6px;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.board-column-drop-zone-text {
+    font-size: 12px;
+    color: #6b7280;
 }
 
 .board-task-content {
